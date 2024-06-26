@@ -2,6 +2,8 @@
 An extremely bare-bones frontend for interacting with the new local Google Gemini Nano model being tested right now. The interface provides a space to write your prompt, a few radio selectors for some premade prompt starters I was testing, and a timer showing how long it took to process your prompt, along with the result. It can be run entirely locally and offline (once you download the model).
 
 This was not built with any serious usability in mind, and was mostly created to test and continue to track the developments on this feature as it progresses.
+
+![screenshot](screenshot.png)
 ## Requirements
 - Google Chrome Version >= 128
 	- As of writing this, the only version of Chrome that fits this requirement is [Google Chrome Canary](https://www.google.com/chrome/canary/)
