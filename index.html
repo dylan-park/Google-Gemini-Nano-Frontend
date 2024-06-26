@@ -1,0 +1,101 @@
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<title>Google Gemini Nano</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+			}
+		</style>
+		<script type='module'>
+			var starter = '';
+			var text = document.getElementById('input');
+
+			function getChromeVersion() {
+				var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+				return raw ? parseInt(raw[2], 10) : false;
+			}
+
+			function setStarter(text) {
+				starter = text;
+			}
+			try {
+				if (getChromeVersion() < 128) {
+					throw new Error('Requires Chrome version 128 or later');
+				}
+				const session = await window.ai.createTextSession();
+				document.getElementById('verify').style.color = 'green';
+				document.getElementById('verify').innerHTML = '✔';
+				async function callPrompt() {
+					try {
+						var start = Date.now();
+						document.getElementById('output').innerHTML = await session.prompt(starter + document.getElementById('input').value);
+						document.getElementById('time').style.backgroundColor = 'lightblue';
+						document.getElementById('time').innerHTML = (Date.now() - start) + ' ms';
+						document.getElementById('regenerate').hidden = false;
+					} catch (e) {
+						if (e.message === 'The request was canceled.') {
+							// do nothing
+						} else {
+							console.error(e.message);
+							alert(e.message);
+						}
+					}
+				}
+
+				function run() {
+					if (text.value != '') {
+						document.getElementById('output').innerHTML = '...'
+						document.getElementById('time').style.backgroundColor = 'transparent';
+						document.getElementById('time').innerHTML = ''
+						document.getElementById('regenerate').hidden = true;
+						callPrompt();
+					} else {
+						document.getElementById('output').innerHTML = ''
+						document.getElementById('time').style.backgroundColor = 'transparent';
+						document.getElementById('time').innerHTML = ''
+						document.getElementById('regenerate').hidden = true;
+					}
+				}
+				text.oninput = function() {
+					run();
+				}
+				document.addEventListener('input', (e) => {
+					if (e.target.getAttribute('name') == 'mode') {
+						setStarter(e.target.value);
+						run();
+					}
+				})
+				document.getElementById ('regenerate').addEventListener ('click', run, false);
+			} catch (e) {
+				document.getElementById('verify').style.color = 'red';
+				document.getElementById('verify').innerHTML = '✘ Error creating session';
+				console.error(e.message);
+				alert('Error: ' + e.message);
+			}
+		</script>
+	</head>
+	<body>
+		<form name='modes'>
+			<input type='radio' id='normal' name='mode' value='' checked>
+			<label for='normal'>Normal</label>
+			<input type='radio' id='japanese' name='mode' value='Translate to Japanese: '>
+			<label for='japanese'>Japanese</label>
+			<input type='radio' id='slang' name='mode' value='Slang for '>
+			<label for='slang'>Slang</label>
+			<input type='radio' id='define' name='mode' value='Define: '>
+			<label for='slang'>Define</label>
+		</form>
+		<textarea id='input' name='input' rows='10' cols='60'></textarea>
+		<span id='verify'></span>
+		<br>
+		<br>
+		<span id='time' style='border-radius: 25px; padding: 5px;'></span>
+		<br>
+		<br>
+		<span id='output' style='font-weight: bold; font-size: 30px;'></span>
+		<br>
+		<br>
+		<button type='button' id='regenerate' hidden>Regenerate</button>
+	</body>
+</html>
